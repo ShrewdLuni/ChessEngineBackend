@@ -14,7 +14,27 @@ class MyConsumer(WebsocketConsumer):
         pass
 
     def receive(self, text_data):
-        print(1)
+        data = json.loads(text_data)
+        action = data.get('action')
+
+        action_map = {
+            'generate_random_number': self.generate_random_number,
+            'get_chess_info': self.get_chess_info
+        }
+
+        action_func = action_map.get(action)
+        if action_func:
+            action_func()
+        else:
+            self.send(text_data=json.dumps({'error': 'Unknown action'}))
+
+    def generate_random_number(self):
+        random_number = random.randint(1, 100)  # Generate a random number between 1 and 100
+        self.send(text_data=json.dumps({
+            'random_number': random_number
+        }))
+
+    def get_chess_info(self):
         brd = Board()
         pmd = PrecomputedMoveData()
         mg = MoveGenerator(brd, pmd)
