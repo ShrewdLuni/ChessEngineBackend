@@ -29,8 +29,9 @@ class MyConsumer(WebsocketConsumer):
             self.send(text_data=json.dumps({'error': 'Unknown action'}))
 
     def generate_random_number(self):
-        random_number = random.randint(1, 100)  # Generate a random number between 1 and 100
+        random_number = random.randint(1, 100)
         self.send(text_data=json.dumps({
+            'action': 'generate_random_number',
             'random_number': random_number
         }))
 
@@ -43,4 +44,8 @@ class MyConsumer(WebsocketConsumer):
         mg.GenerateLegalMoves()
         moves_as_dicts = [move.__dict__ for move in mg.moves]
         moves_json = json.dumps(moves_as_dicts)
-        self.send(text_data=moves_json)
+        self.send(text_data=json.dumps({
+            'action': 'get_chess_info',
+            'moves': moves_as_dicts
+        }))
+
