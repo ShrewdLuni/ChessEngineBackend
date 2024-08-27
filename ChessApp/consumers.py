@@ -3,8 +3,8 @@ import random
 from channels.generic.websocket import WebsocketConsumer
 
 from ChessEngine.board import Board
-from ChessEngine.moveGenerator import MoveGenerator
-from ChessEngine.precomputedMoveData import PrecomputedMoveData
+from ChessEngine.move_generator import MoveGenerator
+from ChessEngine.precomputed_move_data import PrecomputedMoveData
 
 class MyConsumer(WebsocketConsumer):
     def connect(self):
@@ -39,11 +39,11 @@ class MyConsumer(WebsocketConsumer):
         brd = Board()
         pmd = PrecomputedMoveData()
         mg = MoveGenerator(brd, pmd)
-        brd.FENtoBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+        brd.fen_to_board("rnbqkbnr/pppppppp/8/8/8/8/8/RNBQKBNR w KQkq - 0 1")
 
-        mg.GenerateLegalMoves()
+        mg.generate_legal_moves()
+
         moves_as_dicts = [move.__dict__ for move in mg.moves]
-        moves_json = json.dumps(moves_as_dicts)
         self.send(text_data=json.dumps({
             'action': 'get_chess_info',
             'moves': moves_as_dicts
