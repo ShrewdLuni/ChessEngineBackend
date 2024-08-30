@@ -23,6 +23,7 @@ class MyConsumer(WebsocketConsumer):
         action = data.get('action')
 
         action_map = {
+            'engine_get_legal_moves': self.engine_get_legal_moves,
             'engine_make_move': lambda: self.engine_make_move(data.get('move'))
         }
         action_func = action_map.get(action)
@@ -31,13 +32,18 @@ class MyConsumer(WebsocketConsumer):
         else:
             self.send(text_data=json.dumps({'error': 'Unknown action'}))
 
-    def engine_make_move(self, client_move):
-        self.engine.make_move(client_move['starting_square'], client_move['target_square'])
-        engine_move = self.engine.get_random_move()
+    def engine_get_legal_moves(self):
         legal_moves = self.engine.get_legal_moves()
         moves_as_dicts = [move.__dict__ for move in legal_moves]
         self.send(text_data=json.dumps({
+            'action': 'engine_get_legal_moves',
+            'moves': moves_as_dicts,
+        }))
+
+    def engine_make_move(self, client_move):
+        self.engine.make_move(client_move['starting_square'], client_move['target_square'])
+        engine_move = self.engine.get_random_move()
+        self.send(text_data=json.dumps({
             'action': 'engine_make_move',
             'engine_move': engine_move.__dict__,
-            'moves': moves_as_dicts
         }))
