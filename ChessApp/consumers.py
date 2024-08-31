@@ -1,10 +1,6 @@
 import json
-import random
 from channels.generic.websocket import WebsocketConsumer
 
-from ChessEngine.board import Board
-from ChessEngine.move_generator import MoveGenerator
-from ChessEngine.precomputed_move_data import PrecomputedMoveData
 from ChessEngine.engine import Engine
 
 class MyConsumer(WebsocketConsumer):
