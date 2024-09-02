@@ -37,7 +37,6 @@ class MyConsumer(WebsocketConsumer):
             }
             for move in legal_moves
         ]
-        print(moves)
         self.send(text_data=json.dumps({
             'action': 'engine_get_legal_moves',
             'moves': moves,
@@ -46,7 +45,6 @@ class MyConsumer(WebsocketConsumer):
     def engine_make_move(self, client_move):
         self.engine.make_move(client_move['starting_square'], client_move['target_square'])
         engine_move = self.engine.get_random_move()
-        print(engine_move.get_starting_square(),engine_move.get_target_square(), engine_move.get_move_flag())
         self.send(text_data=json.dumps({
             'action': 'engine_make_move',
             'fen': self.engine.board.fen_from_board(),
