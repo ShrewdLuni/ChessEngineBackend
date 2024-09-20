@@ -43,7 +43,7 @@ class MyConsumer(WebsocketConsumer):
         }))
 
     def engine_make_move(self, client_move):
-        self.engine.make_move(client_move['starting_square'], client_move['target_square'])
+        self.engine.make_move(client_move['starting_square'], client_move['target_square'], client_move['flag'])
         engine_move = self.engine.get_random_move()
         self.send(text_data=json.dumps({
             'action': 'engine_make_move',
