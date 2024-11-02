@@ -30,18 +30,23 @@ class MyConsumer(WebsocketConsumer):
 
     def engine_get_legal_moves(self):
         legal_moves = self.engine.get_legal_moves()
-        moves = [
-            {
-                'starting_square': move.get_starting_square(),
-                'target_square': move.get_target_square(),
-                'flag': move.get_move_flag(),
-            }
-            for move in legal_moves
-        ]
-        self.send(text_data=json.dumps({
-            'action': 'engine_get_legal_moves',
-            'moves': moves,
-        }))
+        if self.engine.board.is_checkmate:
+            self.send(text_data=json.dumps({
+                'action': 'engine_game_over',
+            }))
+        else:
+            moves = [
+                {
+                    'starting_square': move.get_starting_square(),
+                    'target_square': move.get_target_square(),
+                    'flag': move.get_move_flag(),
+                }
+                for move in legal_moves
+            ]
+            self.send(text_data=json.dumps({
+                'action': 'engine_get_legal_moves',
+                'moves': moves,
+            }))
 
     def engine_make_move(self, client_move):
         self.engine.make_move(client_move['starting_square'], client_move['target_square'], client_move['flag'])
