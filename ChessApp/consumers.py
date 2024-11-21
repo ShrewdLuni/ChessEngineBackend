@@ -50,10 +50,17 @@ class MyConsumer(WebsocketConsumer):
 
     def engine_make_move(self, client_move):
         self.engine.make_move(client_move['starting_square'], client_move['target_square'], client_move['flag'])
-        engine_move = self.engine.get_best_move()
+        self.send(text_data=json.dumps({
+            'action': 'engine_update_evaluation',
+            'evaluation': self.engine.evaluation.evaluate()
+        }))
+        result = self.engine.get_best_move()
+        move = ["a", "b", "c", "d", "e", "f", "g", "h"][result["move"].get_starting_square() % 8] + str(8 - (result["move"].get_starting_square() // 8)) + ["a", "b", "c", "d", "e", "f", "g", "h"][result["move"].get_target_square() % 8] + str(8 - (result["move"].get_target_square() // 8))
         self.send(text_data=json.dumps({
             'action': 'engine_make_move',
             'fen': self.engine.board.fen_from_board(),
+            'move': move,
+            'evaluation': result["evaluation"]
         }))
 
     def engine_unmake_move(self):
