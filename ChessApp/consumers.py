@@ -20,7 +20,8 @@ class MyConsumer(WebsocketConsumer):
         action_map = {
             'engine_get_legal_moves': self.engine_get_legal_moves,
             'engine_make_move': lambda: self.engine_make_move(data.get('move')),
-            'engine_unmake_move': self.engine_unmake_move
+            'engine_unmake_move': self.engine_unmake_move,
+            'engine_set_position': lambda: self.engine_set_position(data.get('fen'))
         }
         action_func = action_map.get(action)
         if action_func:
@@ -69,4 +70,12 @@ class MyConsumer(WebsocketConsumer):
             'action': 'engine_make_move',
             'fen': self.engine.board.fen_from_board(),
         }))
+
+    def engine_set_position(self, fen):
+        self.engine.set_position(fen)
+        self.send(text_data=json.dumps({
+            'action': 'engine_set_position',
+            'fen': self.engine.board.fen_from_board(),
+        }))
+        self.engine_get_legal_moves()
 
