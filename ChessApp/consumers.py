@@ -76,6 +76,7 @@ class MyConsumer(WebsocketConsumer):
         self.send(text_data=json.dumps({
             'action': 'engine_set_position',
             'fen': self.engine.board.fen_from_board(),
+            'evaluation': self.engine.evaluation.evaluate()
         }))
         self.engine_get_legal_moves()
 
