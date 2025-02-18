@@ -31,7 +31,7 @@ class MyConsumer(WebsocketConsumer):
 
     def engine_get_legal_moves(self):
         legal_moves = self.engine.get_legal_moves()
-        if self.engine.board.is_checkmate:
+        if self.engine.is_checkmate():
             self.send(text_data=json.dumps({
                 'action': 'engine_game_over',
             }))
@@ -53,13 +53,13 @@ class MyConsumer(WebsocketConsumer):
         self.engine.make_move(client_move['starting_square'], client_move['target_square'], client_move['flag'])
         self.send(text_data=json.dumps({
             'action': 'engine_update_evaluation',
-            'evaluation': self.engine.evaluation.evaluate()
+            'evaluation': self.engine.get_current_evaluation()
         }))
         result = self.engine.get_best_move()
         move = ["a", "b", "c", "d", "e", "f", "g", "h"][result["move"].get_starting_square() % 8] + str(8 - (result["move"].get_starting_square() // 8)) + ["a", "b", "c", "d", "e", "f", "g", "h"][result["move"].get_target_square() % 8] + str(8 - (result["move"].get_target_square() // 8))
         self.send(text_data=json.dumps({
             'action': 'engine_make_move',
-            'fen': self.engine.board.fen_from_board(),
+            'fen': self.engine.get_fen(),
             'move': move,
             'evaluation': result["evaluation"]
         }))
@@ -68,15 +68,15 @@ class MyConsumer(WebsocketConsumer):
         self.engine.unmake_move()
         self.send(text_data=json.dumps({
             'action': 'engine_make_move',
-            'fen': self.engine.board.fen_from_board(),
+            'fen': self.engine.get_fen(),
         }))
 
     def engine_set_position(self, fen):
         self.engine.set_position(fen)
         self.send(text_data=json.dumps({
             'action': 'engine_set_position',
-            'fen': self.engine.board.fen_from_board(),
-            'evaluation': self.engine.evaluation.evaluate()
+            'fen': self.engine.get_fen(),
+            'evaluation': self.engine.get_current_evaluation()
         }))
         self.engine_get_legal_moves()
 
