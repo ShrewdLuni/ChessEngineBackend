@@ -1,9 +1,9 @@
-from fastapi import FastAPI
+from fastapi import APIRouter 
 from ChessEngine import Engine
 
-app = FastAPI()
+router = APIRouter()
 
-@app.get("/engine/getLegalMoves")
+@router.get("/engine/getLegalMoves")
 def engine_get_legal_moves(FEN: str):
     engine = Engine()
     print(engine)
@@ -15,9 +15,10 @@ def engine_get_legal_moves(FEN: str):
         print(start, target)
     return moves
 
-@app.get("/engine/getBestMove")
+@router.get("/engine/getBestMove")
 def engine_make_move(FEN: str):
     engine = Engine()
     engine.set_position(FEN)
     best_move = engine.get_best_move()
     return best_move
+
